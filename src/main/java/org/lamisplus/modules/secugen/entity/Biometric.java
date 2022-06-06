@@ -17,6 +17,7 @@ public class Biometric {
     private byte[] template;
     private HashMap<String, byte[]> capturedBiometrics;
     private String templateId;
+    private String biometricType;
 
 
     //BiometricTemplate biometricTemplate;

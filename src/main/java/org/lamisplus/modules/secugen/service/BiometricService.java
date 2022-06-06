@@ -38,6 +38,7 @@ public class BiometricService {
             biometric.setType(Biometric.Type.ERROR);
             return biometric;
         }
+        biometric.setBiometricType(reader);
 
         //log.info("STARTED CAPTURING +++++++++++++++++");
         biometric.getMessage().put("STARTED CAPTURING", "PROCEEDING...");

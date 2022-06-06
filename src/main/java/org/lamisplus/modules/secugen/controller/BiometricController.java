@@ -43,7 +43,7 @@ public class BiometricController {
     private boolean templatesUpdated;
     private final BiometricService biometricService;
     //Versioning through URI Path
-    private final String BASE_URL_VERSION_ONE = "/api/v1/biometrics";
+    private final String BASE_URL_VERSION_ONE = "/api/v1/biometrics/secugen";
 
     @Autowired
     private SecugenManager secugenManager;
