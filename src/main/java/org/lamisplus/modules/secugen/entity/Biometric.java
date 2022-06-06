@@ -1,5 +1,6 @@
 package org.lamisplus.modules.secugen.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -9,9 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.lamisplus.modules.secugen.dto.BiometricTemplate;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Biometric implements Serializable {
     @NotNull(message = "patientId is mandatory")
     private Long patientId;
