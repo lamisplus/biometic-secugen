@@ -236,13 +236,13 @@ public class SecugenManager {
                     if (iError == SGFDxErrorCode.SGFDX_ERROR_NONE) {
                         biometricTemplate.setMatchingScore(score[0]);
                         if (score[0] >= 80) {   // Enroll these fingerprints to database
-                            /*biometric.setImage(imageQuality > imageQuality2 ? imageBuffer : imageBuffer2);
+                            biometric.setImage(imageQuality > imageQuality2 ? imageBuffer : imageBuffer2);
                             biometric.setImageQuality(imageQuality > imageQuality2 ? imageQuality : imageQuality2);
                             biometric.setTemplate(imageQuality > imageQuality2 ? regTemplate : regTemplate2);
                             biometric.setImageWeight(deviceInfo.imageWidth);
                             biometric.setImageHeight(deviceInfo.imageHeight);
-                            biometric.setImageResolution(deviceInfo.imageDPI);*/
-                            mapBiometricTemplate(biometricTemplate, imageQuality, imageQuality2, regTemplate, regTemplate2, imageBuffer, imageBuffer2);
+                            biometric.setImageResolution(deviceInfo.imageDPI);
+                            //biometricTemplate = mapBiometricTemplate(biometricTemplate, imageQuality, imageQuality2, regTemplate, regTemplate2, imageBuffer, imageBuffer2);
                         } else {
                             //biometricTemplate.setId("QUALITY_ERROR");
                             biometric.getMessage().put("QUALITY_ERROR", "Quality is less than " + score[0]);

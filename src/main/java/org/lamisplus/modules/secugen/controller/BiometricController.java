@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.apache.commons.lang3.RandomStringUtils;
 
+import javax.validation.Valid;
+
 /**
  * @author
  */
@@ -37,10 +39,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 //@RequestMapping("/api/biometrics")
 @RequiredArgsConstructor
 public class BiometricController {
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final static String BASE_URL = "/api/biometrics";
-    private List<BiometricTemplate> templates = new ArrayList<>();
-    private boolean templatesUpdated;
+    //private final RestTemplate restTemplate = new RestTemplate();
+    //private final static String BASE_URL = "/api/biometrics";
+    //private List<BiometricTemplate> templates = new ArrayList<>();
+    //private boolean templatesUpdated;
     private final BiometricService biometricService;
     //Versioning through URI Path
     private final String BASE_URL_VERSION_ONE = "/api/v1/biometrics/secugen";
@@ -66,7 +68,7 @@ public class BiometricController {
     }*/
 
     @PostMapping(BASE_URL_VERSION_ONE + "/enrol")
-    public Biometric enrol(@RequestParam String reader, @RequestBody Biometric biometric) {
+    public Biometric enrol(@RequestParam String reader, @Valid @RequestBody Biometric biometric) {
         return biometricService.enrol(reader, biometric);
     }
 
