@@ -1,6 +1,8 @@
 package org.lamisplus.modules.secugen.controller;
 
 import SecuGen.FDxSDKPro.jni.SGFDxSecurityLevel;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.lamisplus.modules.secugen.dto.BiometricTemplate;
 import org.lamisplus.modules.secugen.dto.Device;
@@ -8,12 +10,15 @@ import org.lamisplus.modules.secugen.entity.Biometric;
 import org.lamisplus.modules.secugen.service.BiometricService;
 import org.lamisplus.modules.secugen.service.SecugenManager;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +76,32 @@ public class BiometricController {
     @PostMapping(BASE_URL_VERSION_ONE + "/enrol")
     public Biometric enrol(@RequestParam String reader, @Valid @RequestBody Biometric biometric) {
         return biometricService.enrol(reader, biometric);
+    }
+
+
+    @PostMapping(BASE_URL_VERSION_ONE + "/enrol2")
+    public Biometric enrol2(@RequestParam String reader, @Valid @RequestBody Biometric biometric) {
+        biometric.setMessage(new HashMap<String, String>());
+        if(!reader.equals("SG_DEV_AUTO")) {
+            biometric.getMessage().put("ERROR", "READER NOT AVAILABLE");
+            biometric.setType(Biometric.Type.ERROR);
+            return biometric;
+        }
+        if(!biometric.getBiometricType().equals("FINGERPRINT")) {
+            biometric.getMessage().put("ERROR", "TemplateType not FINGERPRINT");
+            biometric.setType(Biometric.Type.ERROR);
+            return biometric;
+        }
+
+        try(InputStream in=new ClassPathResource("biometrics_payload.txt").getInputStream()){
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+            Biometric biometric1 = mapper.readValue(in, Biometric.class);
+            return biometric1;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     /*@SneakyThrows

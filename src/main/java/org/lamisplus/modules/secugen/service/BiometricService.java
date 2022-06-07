@@ -88,7 +88,7 @@ public class BiometricService {
                     for (CapturedBiometrics capturedBiometrics : capturedBiometricsList) {
                         matched.set(secugenManager.matchTemplate(capturedBiometrics.getTemplate(), biometric.getTemplate()));
                         if (matched.get()) {
-                            log.info("Fingerprint already exist");
+                            //log.info("Fingerprint already exist");
                             biometric.getMessage().put("PATIENT_IDENTIFIED", "Fingerprint already captured");
                             biometric.setType(Biometric.Type.ERROR);
                             biometric.setCapturedBiometricsList(BiometricStore.getPatientBiometricStore().get(biometric.getPatientId()));
@@ -121,14 +121,19 @@ public class BiometricService {
         } catch (Exception exception) {
             exception.printStackTrace();
             biometric.getMessage().put("ERROR", exception.getMessage());
+            biometric.getMessage().put("IMAGE QUALITY",
+                    (biometric.getImageQuality() < 80) ? "LOW - " + biometric.getImageQuality() : "OK");
+
+            biometric.getMessage().put("TEMPLATE LENGTH",
+                    (biometric.getTemplate().length < 200) ? "LOW - " + biometric.getTemplate().length : "OK");
             biometric.setType(Biometric.Type.ERROR);
             return biometric;
         }
-        if(biometric.getCompleted() == true){
+        /*if(biometric.getCompleted() == true){
             //save all biometric and return biometric
             //maybe send to server
             return this.sendBiometrics(biometric);
-        }
+        }*/
         return biometric;
     }
 

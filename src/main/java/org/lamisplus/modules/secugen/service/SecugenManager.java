@@ -212,7 +212,6 @@ public class SecugenManager {
      */
     public Biometric captureFingerPrint(Biometric biometric) {
         try {
-            BiometricTemplate biometricTemplate = new BiometricTemplate();
             //Instant start = Instant.now();
             this.sgfplib.SetTemplateFormat(SGFDxTemplateFormat.TEMPLATE_FORMAT_ISO19794);
             long iError;
@@ -234,7 +233,7 @@ public class SecugenManager {
 
                     iError = this.sgfplib.GetMatchingScore(regTemplate, regTemplate2, score);
                     if (iError == SGFDxErrorCode.SGFDX_ERROR_NONE) {
-                        biometricTemplate.setMatchingScore(score[0]);
+                        biometric.setMatchingScore(score[0]);
                         if (score[0] >= 80) {   // Enroll these fingerprints to database
                             biometric.setImage(imageQuality > imageQuality2 ? imageBuffer : imageBuffer2);
                             biometric.setImageQuality(imageQuality > imageQuality2 ? imageQuality : imageQuality2);
