@@ -10,6 +10,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.lamisplus.modules.secugen.dto.Device;
 import org.lamisplus.modules.secugen.entity.Biometric;
+import org.lamisplus.modules.secugen.entity.BiometricStore;
 import org.lamisplus.modules.secugen.entity.CapturedBiometrics;
 import org.lamisplus.modules.secugen.enumeration.ErrorCode;
 import org.lamisplus.modules.secugen.util.HttpConnectionManager;
@@ -21,8 +22,10 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -44,6 +47,8 @@ public class BiometricService {
             reader = URLDecoder.decode(reader, "UTF-8");
         } catch (UnsupportedEncodingException ignored) {
         }*/
+
+
         if(biometric.getMessage() == null){
             biometric.setMessage(new HashMap<>());
         }
@@ -77,13 +82,17 @@ public class BiometricService {
             if (biometric.getTemplate().length > 200 && biometric.getImageQuality() >= 80) {
 
                 byte[] scannedTemplate = biometric.getTemplate();
-                if(biometric.getTemplate() != null && biometric.getCapturedBiometricsList() != null) {
-                    for (CapturedBiometrics capturedBiometrics : biometric.getCapturedBiometricsList()) {
+                if(biometric.getTemplate() != null && !BiometricStore.getPatientBiometricStore().isEmpty()) {
+                    final List<CapturedBiometrics> capturedBiometricsList = BiometricStore.getPatientBiometricStore().values().stream().findFirst().get();
+
+                    for (CapturedBiometrics capturedBiometrics : capturedBiometricsList) {
                         matched.set(secugenManager.matchTemplate(capturedBiometrics.getTemplate(), biometric.getTemplate()));
                         if (matched.get()) {
                             log.info("Fingerprint already exist");
                             biometric.getMessage().put("PATIENT_IDENTIFIED", "Fingerprint already captured");
                             biometric.setType(Biometric.Type.ERROR);
+                            biometric.setCapturedBiometricsList(BiometricStore.getPatientBiometricStore().get(biometric.getPatientId()));
+                            biometric.setCapturedBiometricsList(capturedBiometricsList);
                             return biometric;
                         }
                     }
@@ -93,15 +102,16 @@ public class BiometricService {
 
                 biometric.getMessage().put("REGISTRATION", "PROCEEDING...");
                 biometric.setType(Biometric.Type.SUCCESS);
-                //biometric.setTemplate(scannedTemplate);
                 CapturedBiometrics capturedBiometrics = new CapturedBiometrics();
                 capturedBiometrics.setTemplate(scannedTemplate);
                 capturedBiometrics.setTemplateType(biometric.getTemplateType());
-                biometric.getCapturedBiometricsList().add(capturedBiometrics);
-                //biometric.setIso(true);
+
+                List<CapturedBiometrics> capturedBiometricsList =
+                        BiometricStore.addCapturedBiometrics(biometric.getPatientId(), capturedBiometrics)
+                        .get(biometric.getPatientId());
+
+                biometric.setCapturedBiometricsList(capturedBiometricsList);
                 biometric.setTemplate(scannedTemplate);
-                //biometric.setTemplateId("currentUser_" + RandomStringUtils.randomAlphabetic(5));
-                //return biometric;
             }else {
                 biometric.getMessage().put("ERROR", "COULD_NOT_CAPTURE_TEMPLATE...");
                 biometric.setType(Biometric.Type.ERROR);

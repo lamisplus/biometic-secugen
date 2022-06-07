@@ -72,17 +72,6 @@ public class BiometricController {
         return biometricService.enrol(reader, biometric);
     }
 
-    /*private boolean scannerIsNotSet(String reader) {
-        Long readerId = secugenManager.getDeviceId(reader);
-        for (Device device : secugenManager.getDevices()) {
-            if (device.getId().equals(reader)) {
-                secugenManager.boot(readerId);
-                return false;
-            }
-        }
-        return true;
-    }*/
-
     /*@SneakyThrows
     private List<BiometricTemplate> biometricTemplates(String server, String accessToken) {
         String url = server + "/biometrics";

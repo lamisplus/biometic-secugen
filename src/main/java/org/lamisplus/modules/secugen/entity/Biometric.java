@@ -21,9 +21,8 @@ public class Biometric implements Serializable {
     Boolean completed;
 
     private HashMap<String, String> message;
-    //private String finger;
     private byte[] template;
-    private List<CapturedBiometrics> capturedBiometricsList = new ArrayList<>();
+    private List<CapturedBiometrics> capturedBiometricsList;
 
     @NotBlank(message = "templateType is mandatory")
     private String templateType;
